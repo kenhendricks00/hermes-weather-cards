@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" data-theme="__THEME__"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'"><title>__TITLE__ forecast</title>
+<style>
+:root{color-scheme:light dark;--wc-bg:#f6f7f8;--wc-card:#fff;--wc-fg:#202329;--wc-muted:#62676f;--wc-line:#e6e7e9;--wc-selected:#eef0f3;--wc-track:#e4e7eb;--wc-blue:#1971ad;--wc-button:#e9ecf0}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--wc-bg:#131313;--wc-card:#202020;--wc-fg:#f4f4f5;--wc-muted:#a4a4aa;--wc-line:#323234;--wc-selected:#3b3b40;--wc-track:#414145;--wc-blue:#9dcafa;--wc-button:#343438}}
+:root[data-theme=dark]{--wc-bg:#131313;--wc-card:#202020;--wc-fg:#f4f4f5;--wc-muted:#a4a4aa;--wc-line:#323234;--wc-selected:#3b3b40;--wc-track:#414145;--wc-blue:#9dcafa;--wc-button:#343438}
+*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--background,var(--wc-bg));color:var(--foreground,var(--wc-fg));font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.card{max-width:640px;min-width:0;margin:auto;border:1px solid var(--border,var(--wc-line));border-radius:28px;overflow:hidden;background:var(--card,var(--wc-card));color:var(--card-foreground,var(--wc-fg))}.current{padding:18px 18px 14px}header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:12px}h1{font-size:20px;line-height:1.2;margin:0;font-weight:650;overflow-wrap:anywhere;min-width:0}.units{display:flex;gap:3px;flex-shrink:0}button{font:inherit;color:inherit;border:0;cursor:pointer}button:focus-visible,a:focus-visible,.hours:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}.units button{width:42px;height:40px;border-radius:24px;background:transparent;color:var(--muted-foreground,var(--wc-muted))}.units [aria-pressed=true]{background:var(--wc-button);color:var(--wc-fg)}.hero{display:flex;gap:14px;align-items:center}.hero .icon{width:49px;height:49px}.temp{font-size:46px;line-height:1.2;letter-spacing:-1.5px;font-weight:450}.condition{font-size:18px}.detail{color:var(--muted-foreground,var(--wc-muted));margin-top:3px;font-size:14px}.section{border-top:1px solid var(--border,var(--wc-line));padding:12px 8px 14px}.label{font-size:13px;font-weight:400;color:var(--muted-foreground,var(--wc-muted));margin:0 9px 6px}.hours{display:flex;gap:2px;overflow-x:auto;overscroll-behavior-x:contain;padding:0 1px 5px;scrollbar-width:thin;scrollbar-color:var(--wc-track) transparent;scroll-snap-type:x proximity}.hour{flex:0 0 60px;text-align:center;scroll-snap-align:start}.hour-time{font-size:12px;color:var(--muted-foreground,var(--wc-muted));white-space:nowrap;height:25px}.icon{width:28px;height:28px;display:inline-block;vertical-align:middle}.hour .icon{margin:2px 0}.pop{color:var(--wc-blue);font-size:12px;min-height:18px}.hour-temp{font-size:17px;margin-top:4px}.hour.sun .hour-temp{font-size:13px;margin-top:8px}.day{display:grid;grid-template-columns:minmax(45px,1fr) 43px 39px minmax(55px,1.6fr) 40px;align-items:center;gap:8px;min-height:50px;padding:3px 9px;border-radius:11px}.day.today{background:var(--wc-selected)}.day-name{font-size:16px}.daily-weather{text-align:center;line-height:1.1}.daily-weather .icon{width:25px;height:25px}.low{text-align:right;color:var(--muted-foreground,var(--wc-muted))}.high{text-align:right}.track{height:5px;border-radius:10px;background:var(--wc-track);position:relative;overflow:hidden}.range{position:absolute;top:0;height:100%;min-width:2px;border-radius:10px;background:linear-gradient(90deg,#4bbce6,#67c88e)}.more{background:transparent;color:var(--muted-foreground,var(--wc-muted));padding:14px 17px 5px;font-size:14px}.more span{display:inline-block;margin-left:7px}.footer{border-top:1px solid var(--border,var(--wc-line));padding:12px 16px;color:var(--muted-foreground,var(--wc-muted));font-size:11px}.footer-line{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}.footer a{color:inherit;text-decoration:none}.footer a:hover{text-decoration:underline}.note{margin-top:5px;font-size:10px}.error{padding:20px;color:var(--wc-fg)}[hidden]{display:none!important}@media(max-width:390px){body{padding:10px}.current{padding:16px 16px 13px}.day{gap:6px;padding:3px 8px;grid-template-columns:minmax(43px,1fr) 39px 33px minmax(48px,1.5fr) 34px}.condition{font-size:16px}.temp{font-size:44px}.hero{gap:11px}.footer{padding:12px 14px}}
+</style></head><body><main class="card" aria-label="Weather forecast"><section class="current"><header><h1 id="city">__TITLE__</h1><div class="units" role="group" aria-label="Temperature units"><button id="fahrenheit" aria-pressed="true" aria-label="Fahrenheit">°F</button><button id="celsius" aria-pressed="false" aria-label="Celsius">°C</button></div></header><div class="hero" id="hero"></div><div class="detail" id="feels"></div><div class="detail" id="wind"></div></section><section class="section"><h2 class="label">Hourly forecast</h2><div class="hours" id="hours" tabindex="0" aria-label="Hourly forecast, scroll horizontally"></div></section><section class="section"><h2 class="label">Daily forecast</h2><div id="days"></div><button class="more" id="more" aria-expanded="false" aria-controls="days">Show more <span aria-hidden="true">⌄</span></button></section><footer class="footer"><div class="footer-line"><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a><span id="valid"></span></div><div class="note" id="snapshot"></div><div class="note">Forecast, not a guarantee. Original SVG artwork; appearance differs from Apple Weather.</div></footer></main>
+<script id="weather-data" type="application/json">__DATA__</script>
+<script>
+'use strict';
+const D=JSON.parse(document.getElementById('weather-data').textContent);
+let unit=D.initial_unit,expanded=false;
+const $=s=>document.getElementById(s),missing=v=>v===null||v===undefined;
+const fmt=(ts,opts)=>new Intl.DateTimeFormat('en-US',{timeZone:D.timezone,...opts}).format(new Date(ts*1000));
+const dateKey=ts=>fmt(ts,{year:'numeric',month:'2-digit',day:'2-digit'});
+const clock=ts=>fmt(ts,{hour:'numeric',minute:'2-digit'});
+const degree=v=>missing(v)?'—':Math.round(unit==='F'?v*9/5+32:v)+'°';
+const percent=v=>missing(v)?'—':Math.round(v)+'%';
+const weatherNames={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Rain showers',81:'Rain showers',82:'Heavy showers',85:'Snow showers',86:'Snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
+function icon(code,day=true,event=null){
+ let name=event||(weatherNames[code]||'Unknown conditions'),shapes='';
+ const sun='<circle cx="16" cy="14" r="6" fill="#ffc65c"/><g stroke="#ffc65c" stroke-width="1.6" stroke-linecap="round"><path d="M16 3v2m0 18v2M5 14H3m26 0h-2M8 6l1.5 1.5m13 13L24 22M24 6l-1.5 1.5m-13 13L8 22"/></g>';
+ const moon='<path d="M22 5a10 10 0 1 0 4 15A10 10 0 0 1 22 5" fill="#b6cbf1"/>';
+ const cloud='<path d="M8 23a6 6 0 0 1-1-12 8 8 0 0 1 15-1 6.5 6.5 0 0 1 2 13Z" fill="#8397a5" stroke="#b9c7ce" stroke-width="1"/>';
+ if(event){shapes='<path d="M7 22a9 9 0 0 1 18 0" fill="#ffbe64"/><g stroke="#f7ad55" stroke-width="1.5"><path d="M16 6v4M4 12l3 3m21-3-3 3M2 22h28"/></g><path d="M16 13v7m-3-4 3-3 3 3" stroke="#f8e2ae" fill="none"/>';if(event==='sunset')shapes=shapes.replace('M16 13v7m-3-4 3-3 3 3','M16 13v7m-3-3 3 3 3-3');}
+ else if(code===0||code===1)shapes=missing(day)?'<text x="16" y="24" fill="#9ba6b3" text-anchor="middle">?</text>':(day?sun:moon);
+ else if(code===2)shapes=(missing(day)?'':day?sun:moon)+cloud;
+ else if(code===3)shapes=cloud;
+ else if(code===45||code===48)shapes=cloud+'<path d="M4 26h24M7 29h18" stroke="#a4b2bd" stroke-width="1.5"/>';
+ else if([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code))shapes=cloud+'<path d="m10 26-2 4m9-4-2 4m9-4-2 4" stroke="#54b9f1" stroke-width="2" stroke-linecap="round"/>';
+ else if([71,73,75,77,85,86].includes(code))shapes=cloud+'<g fill="#bde9fa"><circle cx="9" cy="28" r="1.6"/><circle cx="17" cy="27" r="1.6"/><circle cx="24" cy="29" r="1.6"/></g>';
+ else if([95,96,99].includes(code))shapes=cloud+'<path d="m17 21-5 7h5l-1 4 7-8h-5l2-3Z" fill="#ffd66d"/>';
+ else shapes='<text x="16" y="24" fill="#9ba6b3" text-anchor="middle">?</text>';
+ return '<svg class="icon" viewBox="0 0 32 34" role="img" aria-label="'+name+'"><title>'+name+'</title>'+shapes+'</svg>';
+}
+function el(tag,cls,text){let n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function paint(){
+ $('fahrenheit').setAttribute('aria-pressed',unit==='F');$('celsius').setAttribute('aria-pressed',unit==='C');
+ const c=D.current,today=D.daily.find(d=>dateKey(d.time)===dateKey(D.source_time));
+ $('hero').innerHTML=icon(c.weather_code,c.is_day)+ '<span class="temp">'+degree(c.temperature_2m)+'</span><span class="condition">'+(weatherNames[c.weather_code]||'Unknown conditions')+'</span>';
+ $('feels').textContent='Feels like '+degree(c.apparent_temperature)+' · H:'+degree(today?.temperature_2m_max)+' L:'+degree(today?.temperature_2m_min);
+ $('wind').textContent='Wind '+(missing(c.wind_speed_10m)?'—':Math.round(unit==='F'?c.wind_speed_10m/1.609344:c.wind_speed_10m))+' '+(unit==='F'?'mph':'km/h')+' · Humidity '+percent(c.relative_humidity_2m);
+ const previousScroll=$('hours').scrollLeft;$('hours').replaceChildren();
+ for(const h of D.events){
+  const sun=['sunrise','sunset'].includes(h.kind),node=el('div','hour'+(sun?' sun':''));node.dataset.time=h.time;node.dataset.kind=h.kind;
+  node.append(el('div','hour-time',h.kind==='now'?'Now':sun?clock(h.time):fmt(h.time,{hour:'numeric'})));
+  let art=el('div');art.innerHTML=icon(h.weather_code,h.is_day,sun?h.kind:null);node.append(art);
+  node.append(el('div','pop',sun?'':percent(h.precipitation_probability)));
+  node.append(el('div','hour-temp',sun?(h.kind==='sunrise'?'Sunrise':'Sunset'):degree(h.temperature_2m)));$('hours').append(node);
+ }
+ $('hours').scrollLeft=previousScroll;
+ $('days').replaceChildren();
+ const values=D.daily.flatMap(d=>[d.temperature_2m_min,d.temperature_2m_max]).filter(v=>!missing(v)),lo=Math.min(...values),hi=Math.max(...values);
+ for(const d of D.daily.slice(0,expanded?14:5)){
+  const isToday=dateKey(d.time)===dateKey(D.source_time),row=el('div','day'+(isToday?' today':''));
+  row.append(el('div','day-name',isToday?'Today':fmt(d.time,{weekday:'short'})));
+  const w=el('div','daily-weather');w.innerHTML=icon(d.weather_code,true);w.append(el('div','pop',percent(d.precipitation_probability_max)));row.append(w);
+  row.append(el('div','low',degree(d.temperature_2m_min)));
+  const track=el('div','track');track.setAttribute('aria-hidden','true');
+  if(!missing(d.temperature_2m_min)&&!missing(d.temperature_2m_max)){
+   const bar=el('div','range'),span=hi-lo;
+   bar.style.left=(span?(d.temperature_2m_min-lo)/span*100:0)+'%';bar.style.width=(span?(d.temperature_2m_max-d.temperature_2m_min)/span*100:100)+'%';track.append(bar);
+  }row.append(track,el('div','high',degree(d.temperature_2m_max)));$('days').append(row);
+ }
+ if(!D.daily.length)$('days').append(el('div','detail','Daily forecast unavailable'));
+ $('more').hidden=D.daily.length<=5;$('more').setAttribute('aria-expanded',expanded);$('more').innerHTML=(expanded?'Show less':'Show more')+' <span aria-hidden="true">'+(expanded?'⌃':'⌄')+'</span>';
+}
+try{
+ $('city').textContent=D.city;
+ $('valid').textContent='Valid '+clock(D.source_time)+' · '+fmt(D.source_time,{month:'short',day:'numeric'});
+ $('valid').title='Provider current forecast valid time, not a model-run update time';
+ let stamp='';if(D.retrieved_at){const v=Date.parse(D.retrieved_at);if(Number.isFinite(v))stamp=' · Retrieved '+new Intl.DateTimeFormat('en-US',{timeZone:D.timezone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(v);}
+ $('snapshot').textContent=D.timezone+stamp+'. Static snapshot. Model update time unavailable.';
+ $('fahrenheit').onclick=()=>{unit='F';paint();};$('celsius').onclick=()=>{unit='C';paint();};$('more').onclick=()=>{expanded=!expanded;paint();};paint();
+}catch(e){document.querySelector('main').replaceChildren(el('div','error','Weather unavailable: invalid forecast timezone or data. No previous forecast substituted.'));}
+</script></body></html>

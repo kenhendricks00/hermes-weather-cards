@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "weather-cards",
+  "version": "1.0.0",
+  "description": "Real Open-Meteo forecasts as responsive inline cards. Local F/C conversion, hourly sun events and 5-to-10/14-day expansion. Standard-library Python; explicit fetches only.",
+  "author": {
+    "name": "Kenneth Hendricks",
+    "url": "https://github.com/kenhendricks00"
+  },
+  "homepage": "https://github.com/kenhendricks00/hermes-weather-cards",
+  "repository": "https://github.com/kenhendricks00/hermes-weather-cards",
+  "license": "MIT",
+  "keywords": [
+    "weather",
+    "forecast",
+    "cards",
+    "preview",
+    "open-meteo",
+    "offline"
+  ]
+}
