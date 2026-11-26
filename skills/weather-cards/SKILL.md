@@ -20,7 +20,7 @@ Use this skill for current weather and forecast requests. Generate a real, stati
    ```
 
    Replace paths for the actual skill directory and OS. Do not assume the working directory is the skill directory. Default unit is F; use `--unit C` if preferred. Theme defaults to system, `--theme light|dark` is available. Fetch once per explicit request. No polling, automatic refresh, stale cache fallback, API key, CLI install, upload or hosting.
-3. Check exit status. On failure show the error card and explain the failure. Never reuse old weather silently. Inspect saved JSON and its provider timestamp; do not invent readings, fill missing fields with zero or call retrieval/render time the provider update time. The footer states current forecast valid time and that model update time is unavailable. Forecasts are not guarantees or severe-weather alerts.
+3. Check exit status. On failure show the error card and explain the failure. Never reuse old weather silently. Inspect saved JSON and its provider timestamp; do not invent readings, fill missing fields with zero or call retrieval/render time the provider update time. The footer shows **Updated** with the fetch time (falling back to **Valid** with the provider time if the input has no fetch time). Model-run update time is unavailable. Forecasts are not guarantees or severe-weather alerts.
 4. Return a brief answer plus this on its own line using the actual absolute path:
 
    `::preview{file="/actual/absolute/path/forecast.html"}`
@@ -35,7 +35,7 @@ For the existing pp-weather-goat skill, no new installation is needed or authori
 
 ## Appearance and limits
 
-Rounded theme-following card, current conditions, horizontally scrolling hourly forecast with chronological sunrise/sunset, daily bars on a common scale, tinted Today row, and 5-to-10/14-day expansion. Day rows are not selectable because they do not show day-specific hourly details. Original SVG icons, not Apple artwork; appearance differs from Apple Weather. Unit conversion happens in the browser from canonical C/kmh. UTC epochs are sorted without DST wall-time guessing; display uses the location's IANA timezone through browser Intl. The page makes no network calls. Attribution links navigate only when clicked.
+Rounded theme-following card with a transparent page background, current conditions, hourly forecast with chronological sunrise/sunset (hover arrows on desktop, swipe on touch, no visible scrollbar), daily bars on a common scale, and 5-to-10/14-day expansion. Selecting a day shows that day's fetched high, low, condition, precipitation chance and hours; Today returns to current conditions. The card reports its height to the Hermes inline preview frame so it never clips or leaves a gap. Original SVG icons, not Apple artwork; appearance differs from Apple Weather. Unit conversion happens in the browser from canonical C/kmh. UTC epochs are sorted without DST wall-time guessing; display uses the location's IANA timezone through browser Intl. The page makes no network calls. Attribution links navigate only when clicked.
 
 ## Disclosure
 

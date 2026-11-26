@@ -60,11 +60,14 @@ def check(page, file):
         page.click('#more'); assert page.locator('.day').count() == 5
     page.locator('#hours').evaluate('(x)=>x.scrollLeft=250')
     assert page.locator('#hours').evaluate('(x)=>x.scrollLeft') > 0
-    assert not page.locator('.day button').count()  # No fake day-specific detail interaction.
     times = page.locator('.hour').evaluate_all('(xs)=>xs.map(x=>Number(x.dataset.time))')
     assert times == sorted(times)
     assert len(times) == len(d['events'])
     assert page.locator('.today').count() == 1
+    check_days(page, d)
+    gap = page.evaluate("(()=>{const r=[...document.querySelectorAll('#days .day')].map(e=>e.getBoundingClientRect());return r.length>1?r[1].top-r[0].bottom:9})()")
+    assert gap >= 3, ('day rows touch', gap)
+    assert page.evaluate("getComputedStyle(document.body).backgroundColor") == 'rgba(0, 0, 0, 0)', 'card page must not paint its own background'
     for mode in ('light', 'dark'):
         page.emulate_media(color_scheme=mode)
         for width in (360, 390, 640, 960):
@@ -76,6 +79,87 @@ def check(page, file):
     assert not requests, requests
     assert not errors, errors
     return d
+
+
+def check_days(page, d):
+    """Selecting a day shows that day's numbers and hours; Today restores current conditions."""
+    rows = page.locator('#days .day')
+    if rows.count() < 2:
+        return
+    page.click('#fahrenheit')
+    now_temp = page.locator('#hero .temp').text_content()
+    assert rows.first.get_attribute('aria-pressed') == 'true'
+    rows.nth(1).click()
+    assert rows.nth(1).get_attribute('aria-pressed') == 'true' and rows.first.get_attribute('aria-pressed') == 'false'
+    assert page.locator('#days .day.selected').count() == 1
+    assert page.locator('#hero .temp').text_content() == rows.nth(1).locator('.high').text_content()
+    label = page.locator('#hours-label').text_content()
+    assert label != 'Hourly forecast', label
+    first_hour = page.locator('#hours .hour-time').first.text_content()
+    assert first_hour != 'Now', first_hour
+    times = page.locator('.hour').evaluate_all('(xs)=>xs.map(x=>Number(x.dataset.time))')
+    assert times == sorted(times)
+    page.click('#celsius'); assert rows.nth(1).get_attribute('aria-pressed') == 'true'
+    page.click('#fahrenheit')
+    rows.first.click()
+    assert page.locator('#hours-label').text_content() == 'Hourly forecast'
+    assert page.locator('#hours .hour-time').first.text_content() == 'Now'
+    assert page.locator('#hero .temp').text_content() == now_temp
+
+
+def check_hour_controls(browser, file):
+    """Arrows appear only on hover with a mouse; touch screens swipe with no arrows or scrollbar."""
+    page = browser.new_page(viewport={'width': 560, 'height': 900})
+    page.goto(file.as_uri())
+    hours, nxt = page.locator('#hours'), page.locator('#hours-next')
+    assert hours.evaluate('e=>e.offsetHeight-e.clientHeight') == 0, 'visible scrollbar'
+    assert nxt.evaluate('e=>getComputedStyle(e).opacity') == '0'
+    page.locator('.hours-wrap').hover(); page.wait_for_timeout(250)
+    assert nxt.evaluate('e=>getComputedStyle(e).opacity') == '1'
+    before = hours.evaluate('e=>e.scrollLeft'); nxt.click(); page.wait_for_timeout(700)
+    assert hours.evaluate('e=>e.scrollLeft') > before
+    assert page.locator('#hours-prev').is_visible()
+    page.close()
+    ctx = browser.new_context(viewport={'width': 390, 'height': 900}, has_touch=True, is_mobile=True)
+    page = ctx.new_page(); page.goto(file.as_uri())
+    assert page.evaluate("matchMedia('(hover:none)').matches")
+    assert page.locator('#hours-next').evaluate('e=>getComputedStyle(e).display') == 'none'
+    box = page.locator('#hours').bounding_box(); cdp = ctx.new_cdp_session(page)
+    x, y = box['x'] + box['width'] * .8, box['y'] + box['height'] / 2
+    cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': x, 'y': y}]})
+    for i in range(1, 16):
+        cdp.send('Input.dispatchTouchEvent', {'type': 'touchMove', 'touchPoints': [{'x': x - i * 17, 'y': y}]}); page.wait_for_timeout(16)
+    cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []}); page.wait_for_timeout(500)
+    assert page.locator('#hours').evaluate('e=>e.scrollLeft') > 50, 'swipe did not move the hourly forecast'
+    ctx.close()
+
+
+HOST = """<!doctype html><html><body style="margin:0;background:#141414">
+<span id="w" style="display:block;position:relative;height:280px;width:560px"><iframe id="f" sandbox="allow-scripts" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></span>
+<script>const T="tok123";document.getElementById('f').srcdoc=SRC;
+addEventListener('message',e=>{const d=e.data;if(!d||d.type!=='hermes-inline-preview-size'||d.token!==T)return;document.getElementById('w').style.height=Math.min(1200,Math.max(120,Math.round(d.height)))+'px'});</script></body></html>"""
+INJECT = ('<script>(function(){var t="tok123";var lastH=0;function post(){var d=document.documentElement;var h=d.scrollHeight;'
+          'if(Math.abs(h-lastH)>1){lastH=h;parent.postMessage({type:"hermes-inline-preview-size",token:t,height:h},"*")}}'
+          'addEventListener("load",post);post()})()</' + 'script>')
+
+
+def check_host_sizing(browser, file, tmp):
+    """Mimic Hermes' inline preview frame (starts at 280px, never shrinks itself) and confirm the card resizes it."""
+    card = file.read_text(encoding='utf-8') + INJECT
+    host = Path(tmp) / 'host.html'
+    host.write_text(HOST.replace('SRC', json.dumps(card).replace('</', '<\\/')), encoding='utf-8')
+    page = browser.new_page(viewport={'width': 600, 'height': 1300}); page.goto(host.as_uri()); page.wait_for_timeout(1800)
+    frame = page.frame_locator('#f')
+    tall = lambda: page.locator('#w').evaluate('e=>e.getBoundingClientRect().height')
+    card_h = lambda: frame.locator('.card').evaluate('e=>Math.ceil(e.getBoundingClientRect().bottom)')
+    h1 = tall(); assert abs(h1 - min(1200, card_h() + 2)) <= 3, (h1, card_h())
+    if frame.locator('#more').is_visible():
+        frame.locator('#more').click(); page.wait_for_timeout(800); h2 = tall()
+        assert h2 > h1 + 50, ('Show more did not grow the frame', h1, h2)
+        frame.locator('#more').click(); page.wait_for_timeout(800)
+        assert abs(tall() - h1) <= 3, ('frame did not shrink back', h1, tall())
+    page.close()
+    return h1
 
 
 def main():
@@ -105,14 +189,18 @@ def main():
         assert page.locator('.day .low').first.text_content() == '—'
         assert page.locator('img').count() == 0
         assert page.locator('h1').text_content() == hostile['city']
-        print('PASS: synthetic controls, all unit fields, common-scale bars, missing values, escaping, DST, theme and 360/390/640/960px overflow; no browser network')
+        f.write_text(w.render(w.normalize(fourteen)), encoding='utf-8')
+        check_hour_controls(browser, f)
+        h = check_host_sizing(browser, f, tmp)
+        print('PASS: hover-only arrows, touch swipe, inline frame sizing (' + str(int(h)) + 'px, grows and shrinks with Show more)')
+        print('PASS: synthetic controls, day selection, row gaps, transparent background, all unit fields, common-scale bars, missing values, escaping, DST, theme and 360/390/640/960px overflow; no browser network')
         if a.live:
             live = check(page, a.live.resolve())
             if a.screenshots:
                 docs = ROOT / 'docs'; docs.mkdir(exist_ok=True)
                 for mode, width, name in [('dark', 800, 'desktop-dark.png'), ('dark', 390, 'phone-dark.png'), ('light', 390, 'phone-light.png')]:
                     page.emulate_media(color_scheme=mode); page.set_viewport_size({'width': width, 'height': 1100}); page.click('#fahrenheit'); page.locator('#hours').evaluate('(x)=>x.scrollLeft=0')
-                    page.screenshot(path=str(docs / name), full_page=True)
+                    box = page.locator('.card').bounding_box(); page.screenshot(path=str(docs / name), clip={'x': 0, 'y': 0, 'width': width, 'height': box['y'] + box['height'] + 2})
             print('PASS: live '+live['city']+'; source_time='+str(live['source_time'])+'; daily='+str(len(live['daily']))+'; hours='+str(len(live['hourly'])))
         browser.close()
 

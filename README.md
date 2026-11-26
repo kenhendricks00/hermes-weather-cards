@@ -10,11 +10,14 @@ This is a **skill-generated HTML component**, not a native Hermes-enforced weath
 
 - Bold city header with working Fahrenheit/Celsius segmented buttons.
 - Current icon, temperature, condition, feels-like, high/low, wind and humidity.
-- Sideways-scrolling 24-hour strip with blue precipitation probabilities and sunrise/sunset at their actual chronological positions.
-- Five daily rows, expandable to the fetched 10 or 14 days. Today is tinted. Daily bars share one temperature scale across the entire forecast.
+- 24-hour strip with blue precipitation probabilities and sunrise/sunset at their actual chronological positions. No visible scrollbar: on desktop, round arrow buttons appear when you hover the strip; on phones you swipe it.
+- Five daily rows, expandable to the fetched 10 or 14 days. Daily bars share one temperature scale across the entire forecast.
+- Tap any day to see it: the top section shows that day's high, low, condition and chance of precipitation, and the strip shows that day's fetched hours with its sunrise and sunset. Tap Today to return to current conditions.
+- The card draws no page background of its own, so it sits on whatever theme the chat uses. Inside a Hermes inline preview it reports its real height, so Show more and day changes never clip or leave a gap.
 - Original SVG icons with clear/partly-cloudy day and night variants. No Apple artwork or Apple Weather data. Appearance intentionally differs.
 - System light/dark theme, host CSS variable fallbacks, keyboard-accessible controls and 360-640px card sizing.
 - Every temperature and wind value converts locally. Buttons make no network requests and need no model turn.
+- Compact footer: the Open-Meteo attribution link and **Updated** with the time the forecast was fetched.
 
 | Phone, dark | Phone, light |
 | --- | --- |
@@ -54,7 +57,7 @@ Saved input can be direct Open-Meteo JSON, the script's `{city, retrieved_at, fo
 
 Missing values display as a dash, never fake zero. Invalid units, mismatched arrays, non-finite values, invalid ranges and provider errors fail visibly. A failed command overwrites the chosen HTML output with an error card, returns nonzero, and never silently substitutes an older snapshot. No cache, polling or automatic refresh.
 
-The footer labels the provider's `current.time` as **Valid**, not Updated. This is forecast valid time, not a model-run update timestamp. Retrieval time is labeled separately; model update time is unavailable. UTC epoch seconds preserve DST chronology; browser `Intl` formats in the location's IANA timezone. Daily rows are not selectable because the card does not pretend to provide day-specific hourly details. Forecasts are not guarantees, real-time observations or severe-weather alerts.
+The footer's **Updated** time is when this card fetched the forecast from Open-Meteo, not the provider's model-run time (which Open-Meteo does not expose). If the card is viewed on a later day the date is added. If a saved input has no fetch time, the footer falls back to **Valid** with the provider's `current.time`. The card is a static snapshot and does not refresh. UTC epoch seconds preserve DST chronology; browser `Intl` formats in the location's IANA timezone. Selecting a day shows only fetched values for that day (daily high, low, condition, precipitation chance and the hourly rows the provider returned); nothing is estimated. Forecasts are not guarantees, real-time observations or severe-weather alerts.
 
 ## Privacy, network and provider terms
 
@@ -63,7 +66,7 @@ Only an explicit fetch contacts:
 - `https://geocoding-api.open-meteo.com/v1/search`, if coordinates are omitted. Sends the city query and network metadata.
 - `https://api.open-meteo.com/v1/forecast`. Sends coordinates, requested fields and network metadata.
 
-Requests have a timeout and size limit, allowlisted HTTPS hosts/paths and refused redirects. The offline HTML has no third-party scripts, remote icons, telemetry or browser network fetches. The attribution link navigates to Open-Meteo only if clicked. No shell children, credentials, cookies, token scraping, private Hermes APIs, host patching, background jobs or uploads. The Python script reads its bundled template and your explicitly selected JSON, then writes your chosen HTML and optional raw JSON. It does not read other files or profiles.
+Requests have a timeout and size limit, allowlisted HTTPS hosts/paths and refused redirects. The offline HTML has no third-party scripts, remote icons, telemetry or browser network fetches. Its only message is the documented Hermes inline preview size report (`hermes-inline-preview-size`) sent to the parent frame with the host's own token; outside a Hermes preview no token exists and nothing is sent. The attribution link navigates to Open-Meteo only if clicked. No shell children, credentials, cookies, token scraping, private Hermes APIs, host patching, background jobs or uploads. The Python script reads its bundled template and your explicitly selected JSON, then writes your chosen HTML and optional raw JSON. It does not read other files or profiles.
 
 Normal no-key Open-Meteo API access is **non-commercial**, subject to [current terms and rate limits](https://open-meteo.com/en/terms), not an unlimited or free commercial-hosting promise. Commercial use or higher limits may require an [upstream paid plan](https://open-meteo.com/en/pricing); this plugin neither signs you up nor implements paid-key routing. Weather data attribution and licence: [Open-Meteo data licence](https://open-meteo.com/en/licence), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Geocoding data originates from GeoNames. The MIT licence covers this code and original artwork, not upstream data. Unit conversion and visual summarization modify the data presentation; no provider endorsement is implied.
 
@@ -82,7 +85,7 @@ PYTHONPATH= uv run --no-project --with playwright python tests/browser_check.py
 PYTHONPATH= uv run --no-project --with playwright python tests/browser_check.py   --live /chosen/scratch/forecast.html --screenshots
 ```
 
-Browser checks cover every temperature and wind conversion, Show more/less, horizontal scroll, common-scale bars, missing values, safe city escaping, day/night artwork, DST repeated hours, light/dark and 360/390/640/960px no-page-overflow. Browser screenshots prove standalone layout and controls, not native Hermes Desktop or iPhone delivery. Tests never claim that local fixtures are live data.
+Browser checks cover every temperature and wind conversion, Show more/less, day selection and return to Today, hover-only arrows, touch swipe with no scrollbar, row gaps, a transparent page background, inline frame sizing in a simulated Hermes preview host (grows and shrinks with Show more), common-scale bars, missing values, safe city escaping, day/night artwork, DST repeated hours, light/dark and 360/390/640/960px no-page-overflow. Browser screenshots prove standalone layout and controls, not native Hermes Desktop or iPhone delivery. Tests never claim that local fixtures are live data.
 
 ## Package
 

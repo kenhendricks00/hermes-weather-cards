@@ -170,9 +170,22 @@ class WeatherTests(unittest.TestCase):
 
     def test_no_private_api_or_browser_network(self):
         text = SCRIPT.with_name('card.html').read_text(encoding='utf-8')
-        for token in ('fetch(', 'XMLHttpRequest', 'postMessage', 'window.hermes', 'hermesDesktop', 'setInterval(', 'https://cdn'):
+        for token in ('fetch(', 'XMLHttpRequest', 'window.hermes', 'hermesDesktop', 'setInterval(', 'https://cdn'):
             self.assertNotIn(token, text)
         self.assertIn("connect-src 'none'", text)
+        # The only message is the documented inline-preview size report, sent to the host frame.
+        self.assertEqual(text.count('postMessage'), 1)
+        self.assertIn("parent.postMessage({type:'hermes-inline-preview-size'", text)
+
+    def test_card_blends_into_host_theme(self):
+        text = SCRIPT.with_name('card.html').read_text(encoding='utf-8')
+        self.assertIn('html,body{background:transparent}', text)
+        self.assertNotIn('background:var(--background', text)
+
+    def test_footer_uses_fetch_time(self):
+        html = w.render(w.normalize(dict(fixture(), retrieved_at='2026-11-02T15:20:00+00:00')))
+        self.assertIn('Updated ', html)
+        self.assertIn('"retrieved_at": "2026-11-02T15:20:00+00:00"', html)
 
 
 if __name__ == '__main__': unittest.main()
