@@ -55,6 +55,12 @@ def check(page, file):
     page.click('#celsius')
     assert page.locator('.range').evaluate_all('(xs)=>xs.map(x=>[x.style.left,x.style.width])') == bar_before
     if len(d['daily']) > 5:
+        more = page.locator('#more')
+        assert more.evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(0, 0, 0, 0)'
+        more.hover(); page.wait_for_timeout(250)
+        assert more.evaluate('e=>getComputedStyle(e).backgroundColor') != 'rgba(0, 0, 0, 0)', 'Show more needs a hover pill'
+        assert more.evaluate('e=>getComputedStyle(e).borderRadius') in ('999px', '9999px')
+        page.mouse.move(0, 0)
         page.click('#more'); assert page.locator('.day').count() == len(d['daily'])
         assert page.locator('#more').get_attribute('aria-expanded') == 'true'
         page.click('#more'); assert page.locator('.day').count() == 5
