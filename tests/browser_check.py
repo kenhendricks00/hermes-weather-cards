@@ -125,9 +125,12 @@ def check_hour_controls(browser, file):
     before = hours.evaluate('e=>e.scrollLeft'); nxt.click(); page.wait_for_timeout(700)
     assert hours.evaluate('e=>e.scrollLeft') > before
     assert page.locator('#hours-prev').is_visible()
+    track = page.locator('.units').evaluate('e=>getComputedStyle(e).backgroundColor')
+    assert track != 'rgba(0, 0, 0, 0)', 'desktop unit control should be a switch track'
     page.close()
     ctx = browser.new_context(viewport={'width': 390, 'height': 900}, has_touch=True, is_mobile=True)
     page = ctx.new_page(); page.goto(file.as_uri())
+    assert page.locator('.units').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(0, 0, 0, 0)', 'touch keeps the separate buttons'
     assert page.evaluate("matchMedia('(hover:none)').matches")
     assert page.locator('#hours-next').evaluate('e=>getComputedStyle(e).display') == 'none'
     box = page.locator('#hours').bounding_box(); cdp = ctx.new_cdp_session(page)
