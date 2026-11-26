@@ -78,10 +78,9 @@ function paint(){
 }
 try{
  $('city').textContent=D.city;
- $('valid').textContent='Valid '+clock(D.source_time)+' · '+fmt(D.source_time,{month:'short',day:'numeric'});
- $('valid').title='Provider current forecast valid time, not a model-run update time';
- let stamp='';if(D.retrieved_at){const v=Date.parse(D.retrieved_at);if(Number.isFinite(v))stamp=' · Retrieved '+new Intl.DateTimeFormat('en-US',{timeZone:D.timezone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(v);}
- $('valid').title='Forecast valid time in '+D.timezone+stamp+'. Static snapshot; model update time unavailable.';
+ const rt=D.retrieved_at?Date.parse(D.retrieved_at):NaN,clockMs=ms=>new Intl.DateTimeFormat('en-US',{timeZone:D.timezone,hour:'numeric',minute:'2-digit'}).format(ms),dayMs=ms=>new Intl.DateTimeFormat('en-US',{timeZone:D.timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(ms);
+ if(Number.isFinite(rt)){$('valid').textContent='Updated '+clockMs(rt)+(dayMs(rt)!==dayMs(Date.now())?' · '+new Intl.DateTimeFormat('en-US',{timeZone:D.timezone,month:'short',day:'numeric'}).format(rt):'');$('valid').title='Fetched from Open-Meteo at this time ('+D.timezone+'). Static snapshot; it does not refresh.';}
+ else{$('valid').textContent='Valid '+clock(D.source_time)+' · '+fmt(D.source_time,{month:'short',day:'numeric'});$('valid').title='Forecast valid time; fetch time unavailable. Static snapshot.';}
  const hs=$('hours'),updateNav=()=>{$('hours-prev').hidden=hs.scrollLeft<4;$('hours-next').hidden=hs.scrollLeft+hs.clientWidth>=hs.scrollWidth-4};$('hours-prev').onclick=()=>hs.scrollBy({left:-Math.max(120,hs.clientWidth*.75),behavior:'smooth'});$('hours-next').onclick=()=>hs.scrollBy({left:Math.max(120,hs.clientWidth*.75),behavior:'smooth'});hs.addEventListener('scroll',updateNav,{passive:true});addEventListener('resize',updateNav);requestAnimationFrame(updateNav);
  $('fahrenheit').onclick=()=>{unit='F';paint();};$('celsius').onclick=()=>{unit='C';paint();};$('more').onclick=()=>{expanded=!expanded;if(!expanded&&selected!==null&&D.daily.findIndex(d=>d.time===selected)>=5)selected=null;paint();};paint();
 }catch(e){document.querySelector('main').replaceChildren(el('div','error','Weather unavailable: invalid forecast timezone or data. No previous forecast substituted.'));}
