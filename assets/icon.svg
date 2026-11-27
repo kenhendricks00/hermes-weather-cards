@@ -1,1 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><rect width="256" height="256" rx="58" fill="#15252e"/><circle cx="168" cy="84" r="34" fill="#f7c86e"/><path d="M59 168a31 31 0 0 1-4-61 43 43 0 0 1 82-9 36 36 0 0 1 9 70Z" fill="#9ac2cb" stroke="#d4eef1" stroke-width="5"/><path d="m81 190-9 17m42-17-9 17m42-17-9 17" stroke="#4cbee7" stroke-width="9" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Weather Cards</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e2129"/>
+      <stop offset="1" stop-color="#121419"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- sun -->
+  <path d="M330 72 v28 M330 252 v28 M226 176 h28 M406 176 h28 M256 102 l20 20 M384 230 l20 20 M404 102 l-20 20" stroke="#f7c86e" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="330" cy="176" r="62" fill="#f7c86e"/>
+  <!-- cloud: dark outline pass, then fill -->
+  <g fill="#121419" stroke="#121419" stroke-width="20">
+    <circle cx="196" cy="300" r="70"/>
+    <circle cx="282" cy="262" r="88"/>
+    <circle cx="364" cy="318" r="56"/>
+    <rect x="126" y="300" width="294" height="74" rx="37"/>
+  </g>
+  <g fill="#e8eaef">
+    <circle cx="196" cy="300" r="70"/>
+    <circle cx="282" cy="262" r="88"/>
+    <circle cx="364" cy="318" r="56"/>
+    <rect x="126" y="300" width="294" height="74" rx="37"/>
+  </g>
+  <!-- rain -->
+  <path d="M196 412 l-12 24 M262 412 l-12 24 M328 412 l-12 24" stroke="#9aa1ae" stroke-width="14" stroke-linecap="round"/>
+</svg>
