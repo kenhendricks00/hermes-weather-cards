@@ -128,6 +128,7 @@ icon PNGs and banner.
 - Weather Cards (this repo): real forecasts at a glance.
 - [Input Cards](https://github.com/kenhendricks00/hermes-input-cards): hand API keys to Hermes's secure prompt.
 - [Hermes Pages](https://github.com/kenhendricks00/hermes-pages-plugin): turn answers into shareable pages.
+- [Places Cards](https://github.com/kenhendricks00/hermes-places-cards): nearby places with honest source data.
 
 Each works on its own; together they bring Grok Bot style inline cards to Hermes.
 
